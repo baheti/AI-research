@@ -135,8 +135,141 @@ model.invoke() sends the prompt and returns the full response
 response.text extracts the generated content — that's what you'd display to a user
 Three lines to connect your app to a powerful LLM. That's the beauty of LangChain.
 
+Now let's give this a proper UI. Since building frontends isn't our focus here, we'll use Gradio — a lightweight Python library that lets you spin up a functional web interface with just a few lines of code. No HTML, no JavaScript needed.
+
+Gradio is an open-source Python library by Hugging Face that creates simple web interfaces with minimal code — no frontend experience required. It's built specifically for AI engineers and ML practitioners to quickly demo and test their models and applications.
+
+You define:
+
+The function to call when the user submits input
+The input fields (text boxes, dropdowns, etc.)
+The output fields to display the response
+Gradio handles all the web rendering for you.
+
+Before adding the Gradio code, we need to wrap our LLM logic in a function. Gradio needs a function to call when the user submits input.
+
+Here's what I'd like you to do:
+
+Create a function called generate_explanation() that takes input_text as an argument
+Move the prompt formatting and model call inside it
+Return only response.text
+Keep prompt_template and model initialized outside the function
+Remove the print statements and the concept variable
+Give it a try and hit Submit when ready!
 
 
+
+# Your code goes here
+from langchain.chat_models import init_chat_model
+from langchain_core.prompts import PromptTemplate
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+prompt_template_str = """
+Your task is to explain the concept of **{concept}** to me in a way that is:
+
+1. Clear and intuitive
+2. Concise (in under 100 words)
+3. Tailored specifically to me and what I already know
+
+Use the following information about me to personalize your explanation:
+
+- Role: AI Engineer
+- Goal: Building LLM-powered applications end-to-end from scratch
+- Background: Software engineering and AI development
+
+The personalization should be subtle and natural. Avoid forced references that don't genuinely enhance understanding.
+"""
+
+# Create a prompt template
+prompt_template = PromptTemplate.from_template(prompt_template_str)
+
+# Define the input variable
+concept = "Scaling Laws"
+model = init_chat_model("gpt-4o-mini", model_provider="openai")
+
+
+def generate_explanation(input_text):
+    prompt = prompt_template.format(concept=input_text)
+    response = model.invoke(prompt)
+    return response.text
+
+
+
+Now let's add the Gradio interface
+import gradio as gr
+
+demo = gr.Interface(
+    fn=generate_explanation,
+    inputs=[gr.Textbox(label="Concept", lines=1)],
+    outputs=[gr.Textbox(label="Explanation", lines=5)],
+    flagging_mode="never",
+    title="Personalized Concept Explainer",
+    description="Enter any concept and get a personalized explanation"
+)
+
+demo.launch()
+
+
+
+# Your code goes here
+from langchain.chat_models import init_chat_model
+from langchain_core.prompts import PromptTemplate
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+prompt_template_str = """
+Your task is to explain the concept of **{concept}** to me in a way that is:
+
+1. Clear and intuitive
+2. Concise (in under 100 words)
+3. Tailored specifically to me and what I already know
+
+Use the following information about me to personalize your explanation:
+
+- Role: AI Engineer
+- Goal: Building LLM-powered applications end-to-end from scratch
+- Background: Software engineering and AI development
+
+The personalization should be subtle and natural. Avoid forced references that don't genuinely enhance understanding.
+"""
+
+# Create a prompt template
+prompt_template = PromptTemplate.from_template(prompt_template_str)
+
+# Define the input variable
+concept = "Scaling Laws"
+
+model = init_chat_model("gpt-4o-mini", model_provider="openai")
+
+def generate_explanation(input_text):
+    prompt = prompt_template.format(concept=input_text)
+    response = model.invoke(prompt)
+    return response.text
+
+import gradio as gr
+
+demo = gr.Interface(
+    fn=generate_explanation,
+    inputs=[gr.Textbox(label="Concept", lines=1)],
+    outputs=[gr.Textbox(label="Explanation", lines=5)],
+    flagging_mode="never",
+    title="Personalized Concept Explainer",
+    description="Enter any concept and get a personalized explanation"
+)
+
+demo.launch()
+
+
+LangChain automatically reads provider-specific environment variables (e.g., OPENAI_API_KEY)
+
+in your .env we have to set OPENAI_API_KEY
+
+LangChain automatically reads provider-specific environment variables (e.g., OPENAI_API_KEY)
 
 
 
