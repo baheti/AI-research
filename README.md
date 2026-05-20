@@ -12,4 +12,6 @@ User Interface — where the user provides input and sees the response
 Application Logic — the brain of the app: constructs the prompt, calls the LLM, and handles the response
 LLM Provider — the external service (like OpenAI) that actually generates the output
 
-architecture.webp
+<img src="architecture.webp" width="200" height="200">
+
+
